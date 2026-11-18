@@ -1,0 +1,326 @@
+/* Premium layer — motion, depth and loading polish on top of the original theme. Colours/layout are untouched. */
+:root{--ease-out:cubic-bezier(.22,1,.36,1);--lift:0 14px 34px #3b1f8f1f,0 2px 6px #3b1f8f14}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+::selection{background:var(--brand-soft)}
+.quote-box strong,.cart-final strong,.line-price strong,.totals strong{font-variant-numeric:tabular-nums}
+
+/* Page transitions (View Transitions API; falls back to no animation) */
+main{view-transition-name:page}
+::view-transition-old(page){animation:page-out .14s ease both}
+::view-transition-new(page){animation:page-in .32s var(--ease-out) both}
+@keyframes page-out{to{opacity:0;transform:translateY(-4px)}}
+@keyframes page-in{from{opacity:0;transform:translateY(10px)}}
+::view-transition-group(root){animation-duration:0s}
+
+/* Cards: calm depth on hover, press feedback everywhere */
+.card{transition:transform .35s var(--ease-out),box-shadow .35s var(--ease-out)}
+@media(hover:hover){.card:hover{transform:translateY(-2px)}.card:hover .card-media img,.card:hover .print-tile{transform:scale(1.03)}}
+.card-media img,.card-media .print-tile{transition:transform .6s var(--ease-out)}
+.button,.chip,.text-button,.quality-option,.app-tab{transition:transform .18s var(--ease-out),background-color .2s,box-shadow .25s,border-color .2s,color .2s}
+.button:active,.chip:active,.quality-option:active{transform:scale(.97)}
+@media(hover:hover){.chip:hover,.quality-option:hover{border-color:var(--ink)}}
+
+
+/* Cart badge pops when the count changes */
+.cart-button b.bump{animation:bump .45s var(--ease-out)}
+@keyframes bump{0%{transform:scale(.6)}55%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+/* Dialog: scale-in with blurred backdrop */
+dialog[open]{animation:dialog-in .28s var(--ease-out)}
+dialog::backdrop{backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fade-in .25s ease both}
+@keyframes dialog-in{from{opacity:0;transform:translateY(14px) scale(.97)}}
+@keyframes fade-in{from{opacity:0}}
+
+/* Toast slides up */
+.toast{transform:translate(-50%,12px);transition:opacity .25s,transform .3s var(--ease-out)}
+.toast.show{transform:translate(-50%,0)}
+
+/* Skeletons + boot state */
+.skeleton{background:linear-gradient(100deg,#eae5d8 30%,#f6f2e8 50%,#eae5d8 70%) 0 0/200% 100%;animation:shimmer 1.3s linear infinite;border-radius:var(--radius-md)}
+@keyframes shimmer{to{background-position:-200% 0}}
+.boot{padding-top:24px}.boot-hero{height:clamp(220px,30vw,320px);border-radius:var(--radius-lg)}.boot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:15px;margin-top:20px}.boot-grid .skeleton{aspect-ratio:1.04}
+
+/* 3D stage */
+.studio-stage,.three-view{position:relative}
+.studio-stage{height:clamp(300px,46vw,440px);min-height:0}
+.studio-stage>div,.three-view>div{width:100%;height:100%}
+@media(max-width:767px){.studio-stage{height:min(340px,100vw)}}
+.studio-veil{position:absolute;inset:0;display:grid;place-items:center}
+.spinner{width:34px;height:34px;border-radius:50%;border:2px solid var(--line);border-top-color:var(--ink);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.studio-stage canvas,.three-view canvas{animation:studio-appear .6s ease-out}
+.studio-camera button[aria-pressed=true]{background:var(--ink);color:var(--surface)}
+
+/* Hero imagery is no longer gradient-backed. */
+
+
+/* Keyboard focus is always obvious */
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important}.skeleton{animation:none}}
+
+/* One brand on every route, expressed through the shared tokens. */
+body[data-page] :is(.text-button,.location>span:first-child,.cart-button,.dot){color:var(--brand)}
+[data-service]{--accent:var(--brand);--soft:var(--brand-soft);--wash:var(--brand-wash)}
+.profile-chat .chat-user{background:var(--brand-soft)}
+/* Sub navigation bar — pill-style tabs */
+.desktop-nav{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  min-height:48px;
+  padding:0 4px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--pill);
+  box-shadow:0 1px 3px rgba(23,22,15,.06);
+}
+.desktop-nav button{
+  font-size:12px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  min-height:36px;
+  padding:0 16px;
+  border-radius:20px;
+  color:var(--muted);
+  transition:all .2s var(--ease-out);
+  border:1px solid transparent;
+}
+.desktop-nav button:hover{
+  color:var(--ink);
+  background:rgba(23,22,15,.04);
+  border-color:rgba(23,22,15,.12);
+}
+.desktop-nav [aria-current=page]{
+  color:#fff;
+  background:var(--brand);
+  box-shadow:none;
+  border-color:var(--brand);
+}
+/* Remove any underline/crease on active state */
+.desktop-nav [aria-current=page]::after{content:none}
+@media(max-width:767px){
+  .desktop-nav{display:none}
+}
+
+/* App tabs: hidden on desktop (uses desktop nav), shown on mobile as bottom bar */
+.app-tabs{display:none}
+@media(max-width:767px){
+  .app-tabs{display:block}
+  body{padding-bottom:calc(72px + env(safe-area-inset-bottom))}
+  .toast{bottom:calc(80px + env(safe-area-inset-bottom))}
+}
+
+/* ── Premium Hero Section ─────────────────────────────────────────── */
+.hero{
+  position:relative;
+  overflow:hidden;
+  height:39vh;
+  min-height:39vh;
+  padding:0;
+  border-bottom:none;
+  color:#fff;
+  display:grid;
+  grid-template-columns:1fr;
+  align-items:center;
+  margin:0;
+  isolation:isolate;
+}
+.hero-bg{
+  position:absolute;
+  inset:0;
+  z-index:0;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-image:image-set(
+    url('/assets/image-1.webp') type("image/webp") 1x,
+    url('/assets/image-1.jpg') 1x
+  );
+  animation:heroBgFade 1.2s ease-out both, heroZoom 12s ease-in-out infinite;
+}
+@keyframes heroBgFade{
+  from{opacity:0;transform:scale(1.02)}
+  to{opacity:1;transform:scale(1)}
+}
+@keyframes heroZoom{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+}
+.hero-overlay{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  background:linear-gradient(180deg,
+    rgba(23,22,15,.55) 0%,
+    rgba(23,22,15,.75) 45%,
+    rgba(23,22,15,.92) 100%
+  );
+}
+.hero-glow{
+  position:absolute;
+  top:10%;
+  left:50%;
+  width:55vw;height:55vw;
+  background:radial-gradient(circle,rgba(74,47,143,.18) 0%,rgba(74,47,143,0) 55%);
+  transform:translate(-50%,-50%);
+  filter:blur(70px);
+  pointer-events:none;
+  z-index:1;
+  animation:heroPulse 8s ease-in-out infinite;
+}
+@keyframes heroPulse{
+  0%,100%{opacity:.5;transform:translate(-50%,-50%) scale(1)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1.2)}
+}
+.hero-badge{
+  position:absolute;
+  bottom:clamp(24px,4vw,40px);
+  right:clamp(24px,4vw,40px);
+  z-index:4;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 18px;
+  background:rgba(255,255,255,.92);
+  border:1px solid rgba(255,255,255,.5);
+  border-radius:var(--pill);
+  box-shadow:0 12px 32px rgba(23,22,15,.2);
+  font-size:12px;
+  font-weight:700;
+  color:#17160f;
+  backdrop-filter:blur(10px);
+  animation:badgeSlide .8s var(--ease-out) both;
+}
+@keyframes badgeSlide{
+  from{opacity:0;transform:translateY(14px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.badge-dot{
+  width:7px;height:7px;
+  border-radius:50%;
+  background:var(--brand);
+  box-shadow:0 0 10px rgba(74,47,143,.8);
+  animation:badgeDot 2s ease-in-out infinite;
+}
+@keyframes badgeDot{
+  0%,100%{opacity:.8;transform:scale(1)}
+  50%{opacity:1;transform:scale(1.25)}
+}
+.hero-content{
+  position:relative;
+  z-index:3;
+  max-width:700px;
+  margin:0 auto;
+  padding:clamp(24px,4vw,40px) 20px clamp(20px,4vw,30px);
+  text-align:left;
+  animation:copyReveal .9s var(--ease-out) both;
+}
+@keyframes copyReveal{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  text-transform:uppercase;
+  letter-spacing:.24em;
+  font-size:11px;
+  font-weight:800;
+  color:#ffd8a6;
+  margin-bottom:20px;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.35));
+}
+.eyebrow svg{width:14px;height:14px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
+.hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(48px,8vw,96px);
+  line-height:1.02;
+  letter-spacing:-.03em;
+  font-weight:400;
+  margin:0 0 22px;
+  color:#fff;
+  filter:drop-shadow(0 4px 12px rgba(0,0,0,.45));
+}
+.hero h1 em{
+  font-style:italic;
+  color:#ffd8a6;
+}
+.brand-text{color:#ffd8a6}
+.hero-lede{
+  font-size:clamp(17px,2.2vw,22px);
+  line-height:1.75;
+  color:#e8e4d9;
+  max-width:560px;
+  margin:0 0 36px;
+  filter:drop-shadow(0 2px 8px rgba(0,0,0,.4));
+  font-weight:400;
+}
+.hero-actions{
+  display:flex;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-bottom:48px;
+}
+.hero-actions .button{
+  padding:16px 32px;
+  font-size:15px;
+  font-weight:600;
+  min-height:56px;
+  box-shadow:0 12px 28px rgba(74,47,143,.35);
+}
+.hero-actions .button.secondary{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.35);
+  color:#fff;
+  backdrop-filter:blur(8px);
+}
+.hero-actions .button.secondary:hover{
+  background:rgba(255,255,255,.22);
+  border-color:rgba(255,255,255,.55);
+  color:#fff;
+}
+.hero-stats{
+  display:flex;
+  gap:clamp(24px,5vw,64px);
+  flex-wrap:wrap;
+  padding-top:32px;
+  border-top:1px solid rgba(255,255,255,.25);
+}
+.stat{display:flex;flex-direction:column;gap:6px}
+.stat-value{
+  font-family:var(--font-display);
+  font-size:clamp(22px,3.2vw,32px);
+  font-weight:400;
+  color:#fff;
+}
+.stat-label{
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.22em;
+  font-weight:700;
+  color:#b8b1a3;
+}
+
+@media(max-width:900px){
+  .hero{min-height:39vh;height:39vh}
+  .hero-content{padding:clamp(20px,4vw,30px) 16px clamp(16px,4vw,24px)}
+  .hero-glow{width:70vw;height:70vw}
+  .hero-badge{bottom:16px;right:16px;font-size:11px;padding:8px 14px}
+  .hero-actions{justify-content:center}
+  .hero-stats{gap:clamp(20px,5vw,40px)}
+}
+@media(max-width:640px){
+  .hero{min-height:39vh;height:39vh}
+  .hero h1{font-size:clamp(30px,10vw,44px)}
+  .hero-lede{font-size:14px}
+  .hero-stats{flex-direction:column;gap:12px;align-items:flex-start}
+  .hero-badge{bottom:12px;right:12px;font-size:10px;padding:7px 12px}
+}
+
+/* Reduce motion fallback */
+@media(prefers-reduced-motion:reduce){
+  .hero-glow,.hero-badge,.badge-dot,.hero-content,.hero-bg{animation:none!important}
+}
